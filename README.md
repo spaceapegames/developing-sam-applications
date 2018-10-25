@@ -1,6 +1,6 @@
 ## Developing Applications With AWS SAM
 
-Companion code for Space Ape Games Medium article: http://address
+Companion code for Space Ape Games Medium article: https://medium.com/spaceapetech/developing-applications-with-aws-sam-295c320d563c
 
 ### Pre-requisites
 
