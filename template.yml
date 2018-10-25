@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: S3 Object Replicator
+
+Parameters:
+  SourceBucket:
+    Type: String
+    Default: "my-source-bucket"
+  DestinationBucket:
+    Type: String
+    Default: "my-destination-bucket"
+
+Globals:
+  Function:
+    Runtime: go1.x
+    Environment:
+      Variables:
+        DESTINATION_BUCKET: !Ref DestinationBucket
+
+Resources:
+
+  Replicate:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: bin/replicate
+      CodeUri: ./main.zip
+      Description: Replicate S3 objects
+      MemorySize: 128
+      Timeout: 60
+      Policies:
+      - S3CrudPolicy:
+          BucketName: !Sub "${SourceBucket}"
+      - S3CrudPolicy:
+          BucketName: !Sub "${DestinationBucket}"
+      Events:
+        FileUploaded:
+          Type: S3
+          Properties:
+            Bucket: !Ref SourceS3Bucket
+            Events: s3:ObjectCreated:*
+
+  SourceS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref SourceBucket
+
+  DestinationS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref DestinationBucket
